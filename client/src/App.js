@@ -5,7 +5,7 @@ import getWeb3 from "./utils/getWeb3";
 import "./App.css";
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  state = { blockN: 0, name: 0, expireBlock: 0, web3: null, accounts: null, contract: null, input: '' };
 
   componentDidMount = async () => {
     try {
@@ -37,22 +37,27 @@ class App extends Component {
   };
 
   runExample = async () => {
-    const { contract } = this.state;
+    const { contract, web3 } = this.state;
 
     // Get the value from the contract to prove it worked.
     const name = await contract.methods.getName().call();
     const expireBlock = await contract.methods.getExpireBlock().call();
+    const blockN = web3.eth.getBlockNumber()
 
     // Update state with the result.
-    this.setState({ name, expireBlock: expireBlock.toString() });
+    this.setState({ name, expireBlock: expireBlock.toString(), blockN });
   };
 
   sleep = async () => {
-    const { accounts, contract } = this.state;
-    await contract.methods.set('liam').send({ from: accounts[0] });
+    const { accounts, contract, input } = this.state;
+    await contract.methods.set(input).send({ from: accounts[0] });
     const name = await contract.methods.getName().call();
     const expireBlock = await contract.methods.getExpireBlock().call();
     this.setState({name, expireBlock: expireBlock.toString()});
+  }
+
+  handleChange = (e) => {
+    this.setState({input: e.target.value})
   }
 
   render() {
@@ -62,10 +67,14 @@ class App extends Component {
     return (
       <div className="App">
         <button onClick = {() => this.sleep()}> 
-          book a lazy 20 mins
+          book a lazy 20 min
         </button>
+        <input value={this.state.input} onChange={this.handleChange}></input>
         <div>The stored name is: {this.state.name}</div>
         <div>The stored expireBlock is: {this.state.expireBlock}</div>
+        {
+          this.state.expireBlock > this.state.blockN ? <h1>YOU MAY NOT NAP</h1> : <h1>YOU MAY REGISTER TO NAP</h1>
+        }
       </div>
     );
   }
