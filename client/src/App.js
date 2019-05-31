@@ -25,7 +25,7 @@ class App extends Component {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance });
+      this.setState({ web3, accounts, contract: instance }, this.runExample);
 
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -37,24 +37,22 @@ class App extends Component {
   };
 
   runExample = async () => {
-    const { accounts, contract } = this.state;
-
-    // Stores a given value, 5 by default.
-    await contract.methods.set('liam').send({ from: accounts[0] });
+    const { contract } = this.state;
 
     // Get the value from the contract to prove it worked.
     const name = await contract.methods.getName().call();
     const expireBlock = await contract.methods.getExpireBlock().call();
 
     // Update state with the result.
-    this.setState({ name, expireBlock });
+    this.setState({ name, expireBlock: expireBlock.toString() });
   };
 
   sleep = async () => {
     const { accounts, contract } = this.state;
     await contract.methods.set('liam').send({ from: accounts[0] });
-    const response = await contract.methods.get().call();
-    this.setState({ storageValue: response });
+    const name = await contract.methods.getName().call();
+    const expireBlock = await contract.methods.getExpireBlock().call();
+    this.setState({name, expireBlock: expireBlock.toString()});
   }
 
   render() {
