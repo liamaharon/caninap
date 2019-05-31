@@ -43,10 +43,11 @@ class App extends Component {
     await contract.methods.set('liam').send({ from: accounts[0] });
 
     // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
+    const name = await contract.methods.getName().call();
+    const expireBlock = await contract.methods.getExpireBlock().call();
 
     // Update state with the result.
-    this.setState({ storageValue: response });
+    this.setState({ name, expireBlock });
   };
 
   sleep = async () => {
@@ -62,13 +63,21 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <div className>
-
-        </div>
+        <h1>Good to Go!</h1>
+        <p>Your Truffle Box is installed and ready.</p>
+        <h2>Smart Contract Example</h2>
+        <p>
+          If your contracts compiled and migrated successfully, below will show
+          a stored value of 5 (by default).
+        </p>
+        <p>
+          Try changing the value stored on <strong>line 40</strong> of App.js.
+        </p>
         <button onClick = {() => this.sleep()}> 
           nap nap nap
         </button>
-        <div>The stored value is: {this.state.storageValue}</div>
+        <div>The stored name is: {this.state.name}</div>
+        <div>The stored expireBlock is: {this.state.expireBlock}</div>
       </div>
     );
   }
