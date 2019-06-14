@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import assist from 'bnc-assist';
 import SimpleStorageContract from "./contracts/SimpleStorage.json";
 import getWeb3 from "./utils/getWeb3";
 
@@ -13,23 +14,30 @@ class App extends Component {
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
+      const networkId = 1;
+      const assistInstance = assist.init({
+        networkId,
+        web3,
+        dappId: '5e9e05e9-6631-49d8-8a70-f29dee0d26c5',
+        style: { darkMode: true }
+      })
+      await assistInstance.onboard()
 
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();
 
       // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
       const deployedNetwork = SimpleStorageContract.networks[networkId];
-      const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
-        deployedNetwork && deployedNetwork.address,
+      const instance = assistInstance.Contract(
+        new web3.eth.Contract(
+          SimpleStorageContract.abi,
+          deployedNetwork && deployedNetwork.address,
+        )
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, this.runExample);
-      
-      instance.options.address =  "0x3e6c2c3181f3a8a1c07517cdfcfd26d82f77127f";
       
       setInterval(async () => {
         const {name, blockN, expireBlock, contract} = this.state;
@@ -82,7 +90,6 @@ class App extends Component {
   }
 
   getContent = () => {
-    console.log('block num', this.state.blockN);
     if (this.state.blockN == 0) {
       return (
         <div>
@@ -112,8 +119,6 @@ class App extends Component {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
-    console.log(this.state.blockN);
-    console.log(this.state.expireBlock);
     return (
       <div className="App">
         <img src={bg} style={{height: '90%', position: 'fixed', top: '5%', margin: 'auto', zIndex: '-100', border: '10px solid purple'}}>
