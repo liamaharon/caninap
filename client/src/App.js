@@ -28,7 +28,26 @@ class App extends Component {
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({ web3, accounts, contract: instance }, this.runExample);
+      
+      instance.options.address =  "0x3e6c2c3181f3a8a1c07517cdfcfd26d82f77127f";
+      
+      setInterval(async () => {
+        const {name, blockN, expireBlock, contract} = this.state;
+        const currBlock = await web3.eth.getBlockNumber();  
+        const newName = await this.state.contract.methods.getName().call();
+        const newExpireBlock = await contract.methods.getExpireBlock().call();
+        if (currBlock !== blockN) {
+          this.setState({blockN: currBlock});
+        }
+        if (newName !== name) {
+          this.setState({name: newName});
+        }
+        if (newExpireBlock !== expireBlock) {
+          this.setState({expireBlock: newExpireBlock});
+        }
 
+      }, 3000);
+      
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -44,7 +63,7 @@ class App extends Component {
     // Get the value from the contract to prove it worked.
     const name = await contract.methods.getName().call();
     const expireBlock = await contract.methods.getExpireBlock().call();
-    const blockN = web3.eth.getBlockNumber()
+    const blockN = await web3.eth.getBlockNumber()
 
     // Update state with the result.
     this.setState({ name, expireBlock: expireBlock.toString(), blockN });
@@ -62,23 +81,46 @@ class App extends Component {
     this.setState({input: e.target.value})
   }
 
+  getContent = () => {
+    console.log('block num', this.state.blockN);
+    if (this.state.blockN == 0) {
+      return (
+        <div>
+          <h1 style={{color: 'red', fontSize: '25px'}}>tis loading fam</h1>
+        </div>
+      )
+    } else {
+      return (
+        this.state.expireBlock > this.state.blockN 
+        ? <div>
+            <h1 style={{color: 'red', fontSize: '20px'}}>🚨️🚨🚨{this.state.name} is napping🚨🚨🚨️</h1>
+            <h1 style={{color: 'red', fontSize: '20px'}}>YOU MAY NOT NAP FOR {this.state.expireBlock - this.state.blockN} BLOCKS</h1>
+          </div>
+        : <div>
+            <h1 style={{color: 'green', fontSize: '20px'}}>😍 The lie down cot is eMptY 😍</h1>
+            <h1 style={{color: 'green', fontSize: '20px'}}>🙏😊🙏 ✔️YOU MAY REGISTER TO NAP✔️ 🙏😊🙏</h1>
+            <button onClick = {() => this.sleep()}> 
+              book a lazy 20 min
+            </button>
+            <input style={{border: '1px solid purple'}} value={this.state.input} placeholder='alias' onChange={this.handleChange}></input>
+          </div>
+      )
+    }
+  }
+
   render() {
     if (!this.state.web3) {
       return <div>Loading Web3, accounts, and contract...</div>;
     }
+    console.log(this.state.blockN);
+    console.log(this.state.expireBlock);
     return (
       <div className="App">
         <img src={bg} style={{height: '90%', position: 'fixed', top: '5%', margin: 'auto', zIndex: '-100', border: '10px solid purple'}}>
         </img>
         <div className="Content">
-          <button onClick = {() => this.sleep()}> 
-            book a lazy 20 min
-          </button>
-          <input value={this.state.input} onChange={this.handleChange}></input>
-          <div>The stored name is: {this.state.name}</div>
-          <div>The stored expireBlock is: {this.state.expireBlock}</div>
           {
-            this.state.expireBlock > this.state.blockN ? <h1 style={{color: 'red'}}>YOU MAY NOT NAP</h1> : <h1>YOU MAY REGISTER TO NAP</h1>
+            this.getContent()
           }
         </div>
       </div>
