@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/SimpleStorage.json";
 import getWeb3 from "./utils/getWeb3";
 
+import bg from "./bg.png"
+
 import "./App.css";
 
 class App extends Component {
@@ -66,15 +68,19 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <button onClick = {() => this.sleep()}> 
-          book a lazy 20 min
-        </button>
-        <input value={this.state.input} onChange={this.handleChange}></input>
-        <div>The stored name is: {this.state.name}</div>
-        <div>The stored expireBlock is: {this.state.expireBlock}</div>
-        {
-          this.state.expireBlock > this.state.blockN ? <h1>YOU MAY NOT NAP</h1> : <h1>YOU MAY REGISTER TO NAP</h1>
-        }
+        <img src={bg} style={{height: '90%', position: 'fixed', top: '5%', margin: 'auto', zIndex: '-100', border: '10px solid purple'}}>
+        </img>
+        <div className="Content">
+          <button onClick = {() => this.sleep()}> 
+            book a lazy 20 min
+          </button>
+          <input value={this.state.input} onChange={this.handleChange}></input>
+          <div>The stored name is: {this.state.name}</div>
+          <div>The stored expireBlock is: {this.state.expireBlock}</div>
+          {
+            this.state.expireBlock > this.state.blockN ? <h1 style={{color: 'red'}}>YOU MAY NOT NAP</h1> : <h1>YOU MAY REGISTER TO NAP</h1>
+          }
+        </div>
       </div>
     );
   }
