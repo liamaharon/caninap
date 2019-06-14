@@ -1222,6 +1222,9 @@
     "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
   },
   "networks": {
+    "1": {
+      "address": "0x036e2fb613c5f428cb9a74b5719ed5996ffa49ba"
+    },
     "4": {
       "address": "0x3e6c2c3181f3a8a1c07517cdfcfd26d82f77127f"
     },
